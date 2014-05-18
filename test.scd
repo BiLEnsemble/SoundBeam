@@ -1,6 +1,18 @@
-(
+////////////////////////////////////////////////////
+// INSTRUCTIONS FOR STARTING SOUNDBEAM from SC
 
-var sbeam;
+// SYSTEM PREP
+// 1.) start node.js from osc-web folder in terminal window1 $node bridge.js
+// 2.) start the addon-sdk activation from within addon-sdk folder: $source bin/activate
+// 3.) start (restart) firefox: $cfx run
+
+// SUPERCOLLIDER
+// 4.) start this code:
+// Make sure SC is on port no. 57120 $NetAddr.langPort // to check
+
+////////////////////////////////////////////////////
+
+(
 
 //sbeam = SoundBeam.new("les"); // make a new object to use broadcast messaging
 b = SoundBeam.newOSCGroups("/home/celesteh/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.0.9", "les", "foo");
@@ -26,8 +38,47 @@ b.socialEventAction = {|site, time| site.postln}; // another BiLE member has hit
 
 )
 
+// Examples for Sonification
+// 1) simple access count to pitch correlation, upon third party hits
+b.thirdPartyAction = { |site| \thirdParty.postln; (midinote: site.accessCount % 60 + 30).play; };
+
+// 2) 
+(
+b.bothAction = { |site| var data;
+	\bothAction.postln; // track which ActionFunc is called
+	data = [site.site, site.accessCount, site.cookieCount, site.clickedIntentionallyCount];
+	(midinote: data[1].linlin(1,600,30,110), \instrument, \soundbeam1).play;
+	data.postln; // see whats inside
+	if(data[0].asString.contains(".de"), {\German.postln; (midinote: 70, instrument: \soundbeam2, \amp: 0.5).play});
+};
+
+// needs soundbeam1 and soundbeam2 instruments:
+
+SynthDef(\soundbeam1, {arg out, amp=0.1, pan=0, freq=200,atk=0.1, sustain=1, noise=1, bw=0.2;
+	var son, env;
+	env=EnvGen.kr(Env.linen(atk, sustain), doneAction:2);
+	son=BBandPass.ar(WhiteNoise.ar(noise), freq, bw).softclip;
+	son=son*env;
+	Out.ar(out, Pan2.ar(son, pan, amp));
+}).add;
 
 
+SynthDef(\soundbeam2, { |out=0,amp=0.1,sustain=1.0,freq=440,coef=0.5|
+    var snd, env;
+    snd = Pluck.ar(WhiteNoise.ar(1!2),
+        Impulse.ar(0),
+        freq.reciprocal,
+        freq.reciprocal,
+        sustain, coef: 0.5);
+    env = EnvGen.ar(Env.perc(0.01,sustain), doneAction:2);
+    OffsetOut.ar(out, snd * amp);
+}).add;
+)
+
+
+
+
+/*
 NetAddr.langPort
 
 
@@ -74,7 +125,7 @@ OSCFunc({|msg, time, addr, recvPort|
 
 
 
-
+*/
 
 
 
