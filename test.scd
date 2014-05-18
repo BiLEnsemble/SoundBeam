@@ -6,9 +6,10 @@
 // 2.) start the addon-sdk activation from within addon-sdk folder: $source bin/activate
 // (Does this needs doing every time or just once for the first time?)
 // 3.) change to lightbeam directory, then start firefox with: $cfx run
+// 4.) Do "Start Lightbeam" from "Extras" Menu in Firefox. Otherwise no OSC msgs get sent
 
-// SUPERCOLLIDER
-// 4.) start this code:
+// in SUPERCOLLIDER
+// 5.) start this code:
 // Make sure SC is on port no. 57120 $NetAddr.langPort // to check
 
 ////////////////////////////////////////////////////
