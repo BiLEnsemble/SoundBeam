@@ -4,7 +4,8 @@
 // SYSTEM PREP
 // 1.) start node.js from osc-web folder in terminal window1 $node bridge.js
 // 2.) start the addon-sdk activation from within addon-sdk folder: $source bin/activate
-// 3.) start (restart) firefox: $cfx run
+// (Does this needs doing every time or just once for the first time?)
+// 3.) change to lightbeam directory, then start firefox with: $cfx run
 
 // SUPERCOLLIDER
 // 4.) start this code:
@@ -15,6 +16,8 @@
 (
 
 //sbeam = SoundBeam.new("les"); // make a new object to use broadcast messaging
+
+// EXCHANGE WITH YOUR OWN pathToOSCGroupClient, Les/Servers IP, YourNickName, SomePassword
 b = SoundBeam.newOSCGroups("/home/celesteh/Documents/code/osc/oscgroups/bin/OscGroupClient", "192.168.0.9", "les", "foo");
 
 // set an action function for third party sites (ones you haven't clicked on
@@ -35,6 +38,16 @@ b.bothAction = {|site, time| site.postln}; // for a site you've clieck and has s
 // for the social aspect of the piece:
 b.socialEventAction = {|site, time| site.postln}; // another BiLE member has hit a third party site you have also encountered
 
+/* SoundBeam Data contains
+// exampleData (do site.toString.postln): "google.com 10 18 64 36 google both"
+Accessing the Data directly:
+site.network; // returns one of those symbols: \google, \facebook, \microsoft, \twitter, \cloud or nil
+site.site; // gives URL
+// The following return just numerical values, no limit, incrementing
+site.accessCount;
+site.cookieCount;
+site.clickedIntentionallyCount;
+*/
 
 )
 
