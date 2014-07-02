@@ -9,3 +9,5 @@ Requires:
 https://github.com/BiLEnsemble/lightbeam
 
 https://github.com/BiLEnsemble/osc-web
+
+https://github.com/BiLEnsemble/BiLETools
