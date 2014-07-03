@@ -50,96 +50,44 @@ site.cookieCount;
 site.clickedIntentionallyCount;
 */
 
-)
+);
+
+
+//////////////////////////////////////////
 
 // Examples for Sonification
-// 1) simple access count to pitch correlation, upon third party hits
+
+// 0) Don't Forget to load in some sounds!
+
+"SoundBeamSounds.scd".loadRelative;
+
+// 1) simple access count to pitch correlation, upon third party hits, using SC default synth sound
 b.thirdPartyAction = { |site| \thirdParty.postln; (midinote: site.accessCount % 60 + 30).play; };
 
-// 2) 
+// or
+b.thirdPartyAction = { |site| \thirdParty.postln; (instrument: \soundbeam3, midinote: site.accessCount % 60 + 30).play; };
+
+// 2)
 (
 b.bothAction = { |site| var data;
 	\bothAction.postln; // track which ActionFunc is called
 	data = [site.site, site.accessCount, site.cookieCount, site.clickedIntentionallyCount];
-	(midinote: data[1].linlin(1,600,30,110), \instrument, \soundbeam1).play;
+	(midinote: data[1].linlin(1,600,30,110), \instrument: \soundbeam1).play;
 	data.postln; // see whats inside
-	if(data[0].asString.contains(".de"), {\German.postln; (midinote: 70, instrument: \soundbeam2, \amp: 0.5).play});
+	if (data[0].asString.contains(".de"))
+	{\German.postln; (midinote: 70, instrument: \soundbeam2, \amp: 0.5).play};
 };
+);
 
-// needs soundbeam1 and soundbeam2 instruments:
+// 3)
+b.socialEventAction = {|site, time| (instrument: \soundbeam5, freq: 400*time).play};
 
-SynthDef(\soundbeam1, {arg out, amp=0.1, pan=0, freq=200,atk=0.1, sustain=1, noise=1, bw=0.2;
-	var son, env;
-	env=EnvGen.kr(Env.linen(atk, sustain), doneAction:2);
-	son=BBandPass.ar(WhiteNoise.ar(noise), freq, bw).softclip;
-	son=son*env;
-	Out.ar(out, Pan2.ar(son, pan, amp));
-}).add;
-
-
-SynthDef(\soundbeam2, { |out=0,amp=0.1,sustain=1.0,freq=440,coef=0.5|
-    var snd, env;
-    snd = Pluck.ar(WhiteNoise.ar(1!2),
-        Impulse.ar(0),
-        freq.reciprocal,
-        freq.reciprocal,
-        sustain, coef: 0.5);
-    env = EnvGen.ar(Env.perc(0.01,sustain), doneAction:2);
-    OffsetOut.ar(out, snd * amp);
-}).add;
-)
-
-
-
-
+/////////////////////////////////
+// Debugging
 /*
 NetAddr.langPort
 
-
-OSCFunc.trace
-
-
-
-
-(
-var sites;
-
-sites = IdentityDictionary.new;
-OSCFunc({|msg, time, addr, recvPort|
-
-	var site, last;
-	site = msg[1].asSymbol;
-
-	last = sites.at(site);
-
-	last.isNil.if({
-		last = 0;
-	}, {
-
-			last = last[5];
-	});
-
-	last = last+1;
-
-	msg = msg ++ last;
-
-	((last % 10) == 0).if ({
-		last.post;
-		"\t".post;
-		msg.postln;
-	});
-
-	sites.put(site, msg);
-
-
-}, '/site/thirdparty');
-
-)
-
-
-
+OSCFunc.trace(true)
+OSCFunc.trace(false)
 
 */
-
-
-
